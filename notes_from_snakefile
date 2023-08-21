@@ -1,0 +1,66 @@
+# setting ploidy determines the lowest allele frequency kept - https://sites.google.com/a/broadinstitute.org/legacy-gatk-forum-discussions/2017-06-18-2017-01-18/9687-Regarding-ploidy-in-Haplotyple-Caller-for-multiple-replicates-of-pooled-RNAseq
+    # when p=2 (diploid, 1 individual) lowest freq. is 50%
+    # when p=10 (diploid, 5 individuals) lowest freq. is 10% i.e. heterozygous in 1/5 samples
+    # when p=5 (haploid, 5 invididuals) lowest freq. is 20% i.e. main allele in 1/5 samples
+    # when p=1 (haploid, 1 individual) lowest freq. is 100% i.e. main allele in sample
+
+# setting ploidy to 1 (*number of pooled samples) for a haploid genome allows for calling of the dominant polymorphism
+    # could then variant call again with ploidy unset to detect de novo mutations/multiple acquisition sources - looks at within host variation
+    # consider though that GATK may assume a ploidy of 2 if this is not set explicityly?
+    # to get 1 alternate allele set max_genotype_count to ploidy+1 (https://sites.google.com/a/broadinstitute.org/legacy-gatk-forum-discussions/2018-04-11-2017-12-02/11305-Ploidy-level-in-HaplotypeCaller-in-GATK-40 and https://genome.sph.umich.edu/wiki/Relationship_between_Ploidy,_Alleles_and_Genotypes)
+    # or lower ploidy count?
+
+#### To identify heterozygous sites, sequence reads were
+#mapped to genome assembly contigs following the read coverage
+#calculation methods above, except that the reference
+#contigs used were from genome assemblies prior to removal
+#of sequence contaminants and unmerged quality-filtered
+#reads were used. bcftools (v.1.10.2) mpileup was used to
+#generate raw variant calls using a maximum read coverage
+#setting of 50 (default parameters with -d 50, -C 50). Variant
+#alleles were identified with bcftools call using the multiallelic
+#algorithm, and filtered with bcftools filter to give
+#heterozygous alleles with a minimummapping quality of 20 (-
+#i’%QUAL>20 && AC/AN 0.5’). This method identifies heterozygous
+#sites with balanced allele frequencies and excludes
+#sites that are unlikely to be heterozygous with unbalanced
+#allele frequencies.
+#
+#Wolbachia contigs were further filtered to remove high and
+#low coverage outliers with coverage greater or less than 1.5
+#times the interquartile range beyond median coverage. The
+#number of heterozygous alleles detected per contig was tallied
+#and contigs were categorized by type. To further test
+#whether heterozygous sites likely belonged to the wasp, as
+#opposed to multiple sequence variants of exogenous virus,
+#heterozygous SNPs were “phased” into haplotype blocks using
+#sequence read data. Haplotypes were identified using the
+#list of heterozygous alleles and paired-end sequence reads
+#mapped to the genome assembly with HapCUT2 (Edge et
+#al. 2016). HapCUT2 assembles haplotypes assuming a diploid
+#organism, that is, blocks are reported when only two haplotypes
+#(“diploid haplotype blocks”) are detected for any given
+#stretch of sequence. Therefore, under the scenario of viral
+#endogenization, the presence and length of diploid haplotype
+#blocks are expected to be similar for scaffolds containing
+#virus-derived and BUSCO genes, and near absent for
+#Wolbachia scaffolds. In contrast, under the scenario of diverse
+#or evolving populations of haploid viral genomes (with a variable
+#number of haplotypes for a given sequence), the number
+#of diploid haplotype blocks is expected to be near zero
+#and much shorter than blocks within scaffolds containing
+#BUSCO genes. All of the abovemetrics were used when available
+#and in conjunction with each other to provide an overall
+#picture of the likelihood that virus-derived genes represent
+#EVEs.
+
+
+
+# Following the 2021 guidelines from the Genome Analysis Toolkit (GATK) (https://github.com/broadinstitute/GATK-for-Microbes), samples were aligned both on reference and on shifted reference. Duplicated reads were identified using Picard MarkDuplicates (http://broadinstitute.github.io/picard/). Variant calling with MuTect2 in microbial mode was performed (27).
+# https://training.galaxyproject.org/training-material/topics/variant-analysis/tutorials/microbial-variants/tutorial.html
+# https://training.galaxyproject.org/training-material/topics/variant-analysis/tutorials/non-dip/tutorial.html
+
+# freebayes in --pooled-continuous mode
+# or set ploidy to 1
+
+# Tristan has done it with GATK haplotype caller with ploidy=1
